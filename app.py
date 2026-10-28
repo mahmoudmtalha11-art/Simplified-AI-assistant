@@ -11,25 +11,38 @@ api_key = st.secrets.get("GROQ_API_KEY") or st.text_input("أدخل مفتاح G
 if api_key:
     try:
         client = Groq(api_key=api_key)
+        
+        # جلب قائمة النماذج الفعالة حالياً في حسابك واختيار نموذج صالح تلقائياً
+        models = client.models.list()
+        active_model = None
+        for m in models.data:
+            if "llama" in m.id:
+                active_model = m.id
+                break
+        
+        # إذا لم يجد لاما، يأخذ أول نموذج متاح
+        if not active_model and models.data:
+            active_model = models.data[0].id
+        else:
+            active_model = "llama-3.1-8b-instant"
 
         user_input = st.text_input("اسألني عن أي شيء في العالم:")
         
         if st.button("إرسال"):
             if user_input:
                 with st.spinner("جاري التفكير والتوليد..."):
-                    # إرسال السؤال مع توجيه بالرد باللغة العربية
                     chat_completion = client.chat.completions.create(
                         messages=[
                             {
                                 "role": "system",
-                                "content": "أنت مساعد ذكي ومفيد. أجب على أسئلة المستخدم دائماً باللغة العربية بشكل واضح ودقيق ومفصل."
+                                "content": "أنت مساعد ذكي. أجب على الأسئلة بدقة ووضوح باللغة العربية."
                             },
                             {
                                 "role": "user",
                                 "content": user_input,
                             }
                         ],
-                        model="mixtral-8x7b-32768",
+                        model=active_model,
                     )
                     answer = chat_completion.choices[0].message.content
                     st.success(answer)
