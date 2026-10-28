@@ -27,7 +27,7 @@ if api_key:
                                 "content": user_input,
                             }
                         ],
-                        model="llama-3.1-8b-instant",
+                        model="llama3-70b-8192",
 
                     )
                     # عرض الإجابة
