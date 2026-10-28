@@ -27,7 +27,8 @@ if api_key:
                                 "content": user_input,
                             }
                         ],
-                        model="llama-3.3-70b-versatile",
+                        model="llama-3-8b-8192",
+
                     )
                     # عرض الإجابة
                     answer = chat_completion.choices[0].message.content
